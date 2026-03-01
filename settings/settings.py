@@ -55,8 +55,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
-# AUTH_USER_MODEL = "users.CustomUser"
-
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Application definition
 
@@ -69,7 +68,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'app'
+    'app',
+    'app.domains.users',
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,12 @@
-# IDE
+# IntelliJ / JetBrains
+.idea/
+*.iml
 
-/.idea
+# VS Code
+.vscode/
 
+# Django
+db.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -219,4 +224,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-

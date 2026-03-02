@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'app',
     'app.domains.users',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +84,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True # False em Produção
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'settings.urls'
 

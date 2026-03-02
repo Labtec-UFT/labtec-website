@@ -5,13 +5,13 @@ from .models import CustomUser
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
-    list_display = ('username', 'email', 'is_staff','first_name', 'last_name', 'is_active', 'last_login')
+    list_display = ('email', 'full_name', 'is_staff', 'is_active', 'last_login')
     list_filter = ('is_staff', 'is_active')
 
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
+        (None, {'fields': ('email', 'password')}),
         ('Informações Pessoais', {
-            'fields': ('first_name', 'last_name', 'phone_number', 'profile_picture')
+            'fields': ('full_name', 'phone_number', 'profile_picture')
         }),
         ('Permissões', {
             'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')
@@ -23,11 +23,10 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'username', 'email', 'password1', 'password2', 'is_staff', 'is_active')}
-         ),
+            'fields': ('email', 'full_name', 'password1', 'password2', 'is_staff', 'is_active'),
+        }),
     )
-    search_fields = ('email', 'username')
+    search_fields = ('email', 'full_name')
     ordering = ('email',)
-    readonly_fields = ('last_login', 'date_joined')
 
 admin.site.register(CustomUser, CustomUserAdmin)

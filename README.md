@@ -105,7 +105,8 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 <br>
 **[Guilherme Araújo](https://github.com/)** – Desenvolvedor
 <br>
-**[Ricardo](https://github.com/)** – Desenvolvedor
+**[Ricardo](https://github.com/devricardorodrigues
+)** – Desenvolvedor
 
 * Responsáveis pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
 

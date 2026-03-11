@@ -110,9 +110,36 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 * Responsáveis pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
 
 ---
+### Ambiente virtual (`venv`) no Python
 
-## Como Rodar Localmente
+Um **ambiente virtual (`venv`)** cria um espaço isolado dentro do projeto para instalar dependências.  
+Isso evita conflitos entre bibliotecas de diferentes projetos e mantém o ambiente organizado.
 
+---
+
+**Como criar o ambiente:**
+
+```bash
+cd labtec-website
+python -m venv venv
+```
+
+**Ativar o ambiente:**
+```bash
+# PowerShell
+.\venv\Scripts\Activate
+```
+
+```bash
+# Linux
+source venv/bin/activate
+```
+#### Após ativar, o terminal exibirá algo semelhante a:
+(venv) C:\labtec-website>
+
+---
+
+### Como Rodar Localmente
 1. Clone o repositório:
 
 ```bash
@@ -120,18 +147,24 @@ git clone https://github.com/Labtec-UFT/labtec-website.git
 ```
 
 2. Configure o ambiente backend (Django + PostgreSQL).
+- Depois de ter criado a (`env`) você precisa rodar o comando:
+```
+    (venv) C:\labtec-website> pip install -m requirements.txt
+```
 
 3. Configure o ambiente frontend (React + Vite).
 
-4. Configure variáveis de ambiente (DB, JWT, SMTP, etc.).
+4. Configure variáveis de ambiente (DB, JWT, SMTP, etc.) - Disponível no grupo de comunicações, modelo base na .env-example
 
 5. Execute os servidores:
 
 ```bash
 # Backend
+(venv) C:\labtec-website>
 python manage.py runserver
 
 # Frontend
+cd .\frontend
 npm install
 npm run dev
 ```
@@ -139,5 +172,5 @@ npm run dev
 ## Links Úteis
 
 * GitHub: [github.com/Labtec-UFT/labtec-website](https://github.com/Labtec-UFT/labtec-website)
-* Documentação do Projeto (interna): `/docs`
+
 

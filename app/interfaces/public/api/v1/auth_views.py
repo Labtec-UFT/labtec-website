@@ -48,12 +48,15 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         if not refresh_token:
             return Response(
-                {'detail': 'Refresh token não encontrado.'},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"detail": "Refresh token não encontrado."},
+                status=401
             )
 
-        # Injeta no request.data para o TokenRefreshView processar normalmente
-        request.data['refresh'] = refresh_token
+        data = request.data.copy()
+        data['refresh'] = refresh_token
+
+        request._full_data = data
+
         return super().post(request, *args, **kwargs)
 
 

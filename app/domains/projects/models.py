@@ -39,6 +39,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = "projects"
         ordering = ["-created_at"]
         verbose_name = "Projeto"
         verbose_name_plural = "Projetos"
@@ -58,6 +59,7 @@ class ProjectImage(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
+        db_table = "project_images"
         ordering = ["order"]
         verbose_name = "Imagem do Projeto"
         verbose_name_plural = "Imagens do Projeto"
@@ -77,6 +79,7 @@ class ProjectVideo(models.Model):
     title = models.CharField(max_length=255, blank=True)
 
     class Meta:
+        db_table = "project_videos"
         verbose_name = "Vídeo do Projeto"
         verbose_name_plural = "Vídeos do Projeto"
 
@@ -97,6 +100,7 @@ class Project3DFile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = "project_3d_files"
         verbose_name = "Arquivo 3D do Projeto"
         verbose_name_plural = "Arquivos 3D do Projeto"
 
@@ -125,6 +129,7 @@ class Print3DData(models.Model):
     )
 
     class Meta:
+        db_table = "print_3d_data"
         verbose_name = "Dados de Impressão 3D"
         verbose_name_plural = "Dados de Impressão 3D"
 
@@ -143,6 +148,7 @@ class PrintStep(models.Model):
     description = models.TextField()
 
     class Meta:
+        db_table = "print_step"
         ordering = ["step_number"]
         unique_together = ("project", "step_number")
         verbose_name = "Etapa de Impressão"

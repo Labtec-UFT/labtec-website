@@ -15,11 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'full_name', 'is_staff']
 
-
 class CookieTokenObtainPairView(TokenObtainPairView):
     """
     Login: retorna o access token no body e seta o refresh token
-    como httpOnly cookie — o cliente JS nunca consegue ler o refresh token.
+    como httpOnly cookie — o JavaScript no cliente não consegue acessá-lo diretamente.
     """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -30,14 +29,13 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 key='refresh_token',
                 value=refresh_token,
                 httponly=True,
-                secure= config('PRODUCTION'),  # True em produção (HTTPS)
+                secure= config('PRODUCTION'),
                 samesite='Lax',
                 max_age=60 * 60 * 24 * 7,
                 path='/',
             )
 
         return response
-
 
 class CookieTokenRefreshView(TokenRefreshView):
     """
@@ -48,14 +46,16 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         if not refresh_token:
             return Response(
-                {'detail': 'Refresh token não encontrado.'},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"detail": "Refresh token não encontrado."},
+                status=401
             )
 
-        # Injeta no request.data para o TokenRefreshView processar normalmente
-        request.data['refresh'] = refresh_token
-        return super().post(request, *args, **kwargs)
+        data = request.data.copy()
+        data['refresh'] = refresh_token
 
+        request._full_data = data
+
+        return super().post(request, *args, **kwargs)
 
 class MeView(APIView):
     """
@@ -67,7 +67,6 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
-
 
 class LogoutView(APIView):
     """

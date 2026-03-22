@@ -1,40 +1,64 @@
+from django.utils import timezone
 from django.db import models
+from app.domains.users.models import CustomUser
+from app.utils.bleach_utils import clean_html
 
 
-class News(models.Model):
-    id = models.AutoField(primary_key=True)
+class NewsModel(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    description = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=255)
     content = models.TextField()
-    summary = models.CharField(max_length=500)
-    cover_image = models.ImageField(upload_to="news/covers/", blank=True, null=True)
-    is_published = models.BooleanField(default=False)
+    summary = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=False)
+    published_at = models.DateTimeField(null=True, blank=True)
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        related_name="news"
+    )
 
     class Meta:
-        ordering = ["-created_at"]
+        db_table = "news"
         verbose_name = "Notícia"
         verbose_name_plural = "Notícias"
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        self.content = clean_html(self.content, strip_opt=True)
+
+        if self.is_published and not self.published_at:
+            self.published_at = timezone.now()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
-
+        return f"{self.id} - {self.title}"
 
 class NewsImage(models.Model):
-    id = models.AutoField(primary_key=True)
     news = models.ForeignKey(
-        News,
+        NewsModel,
         on_delete=models.CASCADE,
-        related_name="images",
+        related_name="images"
     )
     image = models.ImageField(upload_to="news/images/")
-    description = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    is_cover = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        if self.is_cover:
+            NewsImage.objects.filter(news=self.news, is_cover=True).exclude(pk=self.pk).update(is_cover=False)
+
+        super().save(*args, **kwargs)
+
     class Meta:
-        ordering = ["created_at"]
-        verbose_name = "Imagem da Notícia"
-        verbose_name_plural = "Imagens da Notícia"
+        db_table = "news_images"
+        verbose_name = "Imagem da notícia"
+        verbose_name_plural = "Imagens da notícia"
 
     def __str__(self):
-        return f"Imagem — {self.news.title}"
+        return f"Imagem da notícia {self.news.title}"

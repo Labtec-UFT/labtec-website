@@ -10,15 +10,49 @@ import secrets
 from decouple import config
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializer import CustomTokenSerializer, UserSerializer
-
+from app.domains.users.serializer import UserSerializer
 User = get_user_model()
+
+class CreateStaffUserView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return Response(
+                {'detail': 'Email e senha são obrigatórios.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {'detail': 'Usuário já existe.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.objects.create_user(
+            email=email,
+            password=password
+        )
+
+        user.is_staff = True
+        user.save()
+
+        return Response(
+            {'detail': {
+                "email": user.email,
+                "is_staff": user.is_staff,
+            }},
+            status=status.HTTP_201_CREATED
+        )
 
 class CustomTokenObtainView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = CustomTokenSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_207_MULTI_STATUS)
 

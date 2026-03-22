@@ -2,7 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: ["develop"]  # dispara apenas quando algo é mergeado na develop
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
 
 jobs:
   build:

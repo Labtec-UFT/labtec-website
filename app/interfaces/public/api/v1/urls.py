@@ -1,14 +1,6 @@
-from django.urls import path
-from .auth_views import (
-    CookieTokenObtainPairView,
-    CookieTokenRefreshView,
-    MeView,
-    LogoutView,
-)
+from django.urls import path, include
 
 urlpatterns = [
-    path('token/', CookieTokenObtainPairView.as_view(), name='login'),
-    path('token/refresh/', CookieTokenRefreshView.as_view(), name='token-refresh'),
-    path('me/', MeView.as_view(), name='me'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('auth/', include('app.interfaces.public.api.v1.auth.urls')),
+    path('users/', include('app.interfaces.public.api.v1.users.urls')),
 ]

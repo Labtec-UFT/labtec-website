@@ -32,16 +32,16 @@ class Migration(migrations.Migration):
                 ('groups', models.ManyToManyField(
                     blank=True,
                     related_name='user_set',
-                    related_query_name='user',
+                    related_query_name='users',
                     to='auth.group',
                     verbose_name='groups',
                 )),
                 ('user_permissions', models.ManyToManyField(
                     blank=True,
                     related_name='user_set',
-                    related_query_name='user',
+                    related_query_name='users',
                     to='auth.permission',
-                    verbose_name='user permissions',
+                    verbose_name='users permissions',
                 )),
             ],
             options={

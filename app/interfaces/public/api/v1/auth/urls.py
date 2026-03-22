@@ -1,6 +1,5 @@
-from django.urls import path, include
-
-from app.interfaces.public.api.v1.auth.auth_views import (
+from django.urls import path
+from app.interfaces.public.api.v1.auth.views import (
     CookieTokenObtainPairView,
     CookieTokenRefreshView,
     MeView,

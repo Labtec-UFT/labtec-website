@@ -25,3 +25,8 @@ class NewsModelTest(TestCase):
         self.assertTrue(
             abs((self.news.created_at - timezone.now()).total_seconds()) < 1
         )
+
+    def test_delete_news_model(self):
+        self.news.delete()
+        exists = NewsModel.objects.filter(id=self.news.id).exists()
+        self.assertFalse(exists)

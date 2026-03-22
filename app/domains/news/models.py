@@ -6,6 +6,7 @@ from app.utils.bleach_utils import clean_html
 
 class NewsModel(models.Model):
     id = models.BigAutoField(primary_key=True)
+    description = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=255)
     content = models.TextField()
     summary = models.CharField(max_length=255, blank=True)

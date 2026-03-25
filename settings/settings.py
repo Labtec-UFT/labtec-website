@@ -46,7 +46,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'users': '1000/day',
+        'user': '100/minute',
         'anon': '10/minute',
     }
 }
@@ -71,8 +71,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'app',
     'app.domains.users',
-    'app.domains.projects',
-    'app.domains.news',
+    'app.domains.news.apps.NewsConfig',
     'rest_framework_simplejwt.token_blacklist',
 ]
 

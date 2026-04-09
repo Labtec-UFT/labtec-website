@@ -102,12 +102,7 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 ### Desenvolvimento
 
 **[Tarciso Filho](https://github.com/)** – Desenvolvedor
-<br>
-**[Guilherme Araújo](https://github.com/)** – Desenvolvedor
-<br>
-**[Ricardo](https://github.com/)** – Desenvolvedor
-
-* Responsáveis pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
+* Responsável pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
 
 ---
 ### Ambiente virtual (`venv`) no Python

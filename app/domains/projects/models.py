@@ -25,7 +25,8 @@ class Project(models.Model):
     )
     project_type = models.CharField(
         max_length=20,
-        choices=ProjectType.choices,
+        choices=ProjectType,
+        default=ProjectType.PRINT_3D,
     )
     published_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

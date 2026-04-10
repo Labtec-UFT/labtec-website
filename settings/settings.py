@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'app',
     'app.domains.users',
     'app.domains.news.apps.NewsConfig',
+    'app.domains.projects.apps.ProjectsConfig',
     'rest_framework_simplejwt.token_blacklist',
 ]
 

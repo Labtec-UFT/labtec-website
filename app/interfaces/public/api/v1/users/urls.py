@@ -1,8 +1,14 @@
 from django.urls import path
-
-from app.interfaces.public.api.v1.users.views import CreateUserView, CreateStaffUserView
+from app.interfaces.public.api.v1.users.views import (
+    UserListCreateView,
+    UserDetailView,
+    MeView,
+    CreateStaffUserView,
+)
 
 urlpatterns = [
-    path('create/staff/', CreateStaffUserView.as_view(), name='create-staff'),
-    path('create/', CreateUserView.as_view(), name='create-users'),
+    path("", UserListCreateView.as_view(), name="users-list-create"),
+    path("<int:pk>/", UserDetailView.as_view(), name="users-detail"),
+    path("me/", MeView.as_view(), name="users-me"),
+    path("staff/", CreateStaffUserView.as_view(), name="users-create-staff"),
 ]

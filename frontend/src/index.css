@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 @import "tailwindcss";
 
 html, body {
   height: 100%;
-  overflow: hidden;
 }
 
 :root {
@@ -20,6 +20,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
+@theme {
+  --color-blue-secundary: #2B3C5C;
+  --color-medium-blue: #003153;
+  --font-nunito-sans: "Nunito Sans", sans-serif;
+}
 
 

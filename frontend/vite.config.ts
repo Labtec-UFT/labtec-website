@@ -6,6 +6,7 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/static/',
   plugins: [
     react({
       babel: {
@@ -19,6 +20,17 @@ export default defineConfig({
     alias: {
       "@components": path.resolve(__dirname, "src/components"),
       "@assets": path.resolve(__dirname, "src/assets")
+    }
+  },
+  build: {
+    outDir: '../app/static',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
     }
   }
 })

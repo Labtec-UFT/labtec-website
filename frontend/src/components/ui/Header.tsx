@@ -158,7 +158,7 @@ function Header() {
             </ul>
           </li>
 
-          <li><a href="/contact">CONTATO</a></li>
+          <li><Link to="/contact">CONTATO</Link></li>
         </ul>
 
         {/* SOCIAL */}

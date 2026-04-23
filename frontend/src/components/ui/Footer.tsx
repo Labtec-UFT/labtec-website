@@ -11,7 +11,6 @@ export default function Footer() {
 
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
 
-          {/* CONTATO (último no mobile, primeiro no desktop) */}
           <section className="flex flex-col gap-4 order-last lg:order-first">
             <div>
               <h3 className="font-bold mb-2">Contato</h3>

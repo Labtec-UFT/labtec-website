@@ -1,21 +1,10 @@
 // src/context/AuthContext.tsx
-import { createContext, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
 import api from "../services/api/client";
 import { ACCESS_TOKEN } from "../constants/constants";
-
-
-type JwtPayload = { exp: number; [key: string]: unknown };
-
-interface AuthContextType {
-  user: JwtPayload | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext, type JwtPayload } from "./auth-context";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<JwtPayload | null>(null);
@@ -24,7 +13,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Tenta renovar o access token usando o refresh token (cookie httpOnly)
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
     try {
-      const res = await api.post("/api/v1/token/refresh/");
+      const res = await api.post("/api/v1/auth/token/refresh/");
       const access: string = res.data.access;
       localStorage.setItem(ACCESS_TOKEN, access);
       return access;
@@ -61,15 +50,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [checkAuth]);
 
   const login = async (email: string, password: string) => {
-    const res = await api.post("/api/v1/login/", { email, password });
-    const access: string = res.data.access;
-    localStorage.setItem(ACCESS_TOKEN, access);
-    setUser(jwtDecode<JwtPayload>(access));
+    try {
+      const res = await api.post("/api/v1/auth/token/", { email, password });
+      const access: string = res.data.access;
+      localStorage.setItem(ACCESS_TOKEN, access);
+      setUser(jwtDecode<JwtPayload>(access));
+    } catch (error) {
+      const maybeError = error as {
+        response?: { data?: { error?: { message?: string } } };
+      };
+      const message = maybeError?.response?.data?.error?.message;
+      throw new Error(message ?? "Falha ao autenticar.");
+    }
   };
 
   const logout = async () => {
     try {
-      await api.post("/api/v1/logout/");
+      await api.post("/api/v1/auth/logout/");
     } finally {
       localStorage.removeItem(ACCESS_TOKEN);
       setUser(null);

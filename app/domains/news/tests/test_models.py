@@ -7,7 +7,7 @@ class NewsModelTest(TestCase):
     def setUp(self):
         self.news = NewsModel.objects.create(
             title="Microsoft inaugura dois data centers de IA no Brasil",
-            description="Unidades ficam no estado de SP e fazem parte de investimento de R$ 14,7 bilhões anunciado para o país; empresa também promete capacitar 5 milhões de brasileiros até 2027.",
+            description="Investimento em infraestrutura e capacitacao tecnologica no Brasil.",
             content="microsoft-inaugura-dois-data-centers-de-ia-no-brasil",
             created_at=timezone.now(),
             is_published=True,

@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
-from .models import NewsModel, NewsImage
+from django.core.exceptions import ValidationError as DjangoValidationError
 
-ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif']
+from app.service.UploadService import UploadService
+from app.service.ValidationService import ValidationService
+from .models import NewsModel, NewsImage
 
 
 class NewsImageSerializer(serializers.ModelSerializer):
@@ -29,10 +30,21 @@ class NewsImageSerializer(serializers.ModelSerializer):
         return value
 
     def validate_image(self, image):
-        if image.content_type not in ALLOWED_IMAGE_TYPES:
-            raise serializers.ValidationError(
-                f"Tipo de arquivo não permitido. Tipos aceitos: {', '.join(ALLOWED_IMAGE_TYPES)}"
-            )
+        raw_cover = self.initial_data.get(
+            "is_cover",
+            getattr(self.instance, "is_cover", False),
+        )
+        is_cover = raw_cover if isinstance(raw_cover, bool) else str(raw_cover).lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        context = "news.cover" if is_cover else "news.gallery"
+        try:
+            UploadService.validate_file(image, context=context)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages)
         return image
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -94,6 +106,12 @@ class NewsSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at", "published_at", "author"]
 
     def create(self, validated_data):
+        validated_data.pop("external_link", None)
+        try:
+            ValidationService.validate_news_payload(validated_data)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict if hasattr(exc, "message_dict") else exc.messages)
+
         images_data = validated_data.pop("images", [])
         news = NewsModel.objects.create(**validated_data)
 
@@ -103,6 +121,17 @@ class NewsSerializer(serializers.ModelSerializer):
         return news
 
     def update(self, instance, validated_data):
+        validated_data.pop("external_link", None)
+        payload = {
+            "title": validated_data.get("title", instance.title),
+            "content": validated_data.get("content", instance.content),
+            "is_published": validated_data.get("is_published", instance.is_published),
+        }
+        try:
+            ValidationService.validate_news_payload(payload)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict if hasattr(exc, "message_dict") else exc.messages)
+
         images_data = validated_data.pop("images", None)
 
         for attr, value in validated_data.items():

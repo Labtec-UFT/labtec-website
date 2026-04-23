@@ -5,8 +5,8 @@ import svgr from "vite-plugin-svgr";
 import path from "path";
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/static/',
+export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : '/static/',
   plugins: [
     react({
       babel: {
@@ -33,4 +33,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))

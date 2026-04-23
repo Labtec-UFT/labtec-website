@@ -17,9 +17,9 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 
 ## Stack Tecnológica
 
-- **Backend:** Django 6.0.2 + Django REST Framework
+- **Backend:** Django 6.0.2 + Django REST Framework 3.16.1
 - **Frontend:** React + Vite
-- **Banco de Dados:** PostgreSQL
+- **Banco de Dados:** SQlite e MariaDB
 
 **Outras Ferramentas:** Axios, Three.js, JWT e SMTP
 
@@ -95,19 +95,15 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 
 ### Gestão e Arquitetura
 
-**[Luís Gustavo Alves Bezerra](https://github.com/lu1zss)** – Gerente de Projeto e Desenvolvedor
+**[Luís Gustavo Alves Bezerra](https://github.com/lu1zss)**
 * Planejamento e organização de sprints, arquitetura e desenvolvimento de funcionalidades.
 
 ### Equipe de Desenvolvimento
 
-**[Tarciso Filho](https://github.com/tarcisof)** – Desenvolvedor
+**[Tarciso Filho](https://github.com/tarcisof)**
 <br>
-**[Guilherme Araújo](https://github.com/Guislaoq)** – Desenvolvedor
-<br>
-**[Ricardo](https://github.com/devricardorodrigues
-)** – Desenvolvedor
 
-* Responsáveis pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
+* Responsável pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
 
 ---
 
@@ -143,8 +139,47 @@ npm install
 npm run dev
 ```
 
+## **Instruções para Produção**
+
+Para preparar a aplicação para execução em ambiente de produção, siga os passos abaixo no diretório raiz do projeto:
+
+### **1. Instalar as dependências do projeto**
+
+Execute o comando abaixo para instalar todas as bibliotecas necessárias definidas no arquivo `requirements.txt`:
+
+```
+pip install -r requirements.txt
+```
+
+### **2. Aplicar as migrações do banco de dados**
+
+Após instalar as dependências, execute as migrações para criar e atualizar a estrutura do banco de dados:
+
+```
+python manage.py migrate
+```
+
+### **3. Coletar os arquivos estáticos**
+
+Por fim, execute o comando abaixo para reunir todos os arquivos estáticos da aplicação (CSS, JavaScript, imagens, etc.) em uma única pasta de produção:
+
+```
+python manage.py collectstatic
+```
+
+Esse processo é necessário para que os arquivos estáticos sejam servidos corretamente em ambiente de produção.
+
+### **Observação**
+
+Antes de executar esses comandos, verifique se as variáveis de ambiente necessárias estão configuradas corretamente, especialmente as relacionadas ao banco de dados, chave secreta da aplicação e configurações de debug.
+
+As variáveis de ambiente da aplicação devem ser definidas em um arquivo `.env`, localizado na raiz do projeto. Esse arquivo contém informações sensíveis e deve ser mantido em segurança, com acesso restrito apenas à aplicação e aos responsáveis pela infraestrutura.
+
+É importante adotar medidas de segurança adequadas para garantir o acesso seguro a esse arquivo em ambiente de produção, protegendo dados sensíveis e evitando exposição indevida das configurações da aplicação.
+
+
+
 ## Links Úteis
 
 * GitHub: [github.com/Labtec-UFT/labtec-website](https://github.com/Labtec-UFT/labtec-website)
-* Documentação do Projeto (interna): `/docs`
 

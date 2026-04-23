@@ -1,10 +1,5 @@
-from django.urls import path
-from .views import (
-    ListCreateNews,
-    RetrieveUpdateDeleteNews,
-)
+from django.urls import include, path
 
 urlpatterns = [
-    path("", ListCreateNews.as_view(), name="news-list-create"),
-    path("<int:pk>/", RetrieveUpdateDeleteNews.as_view(), name="news-detail"),
+    path("", include("app.interfaces.public.api.v1.news.management_urls")),
 ]

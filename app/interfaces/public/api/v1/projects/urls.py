@@ -1,8 +1,8 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 
 from .views import (
-    ProjectViewSet,
+    ManageProjectViewSet,
     ProjectImageViewSet,
     ProjectVideoViewSet,
     Project3DFileViewSet,
@@ -10,9 +10,9 @@ from .views import (
     PrintStepViewSet,
 )
 
-router = DefaultRouter()
+router = SimpleRouter()
 
-router.register("", ProjectViewSet, basename="project")
+router.register("", ManageProjectViewSet, basename="project")
 router.register("project-images", ProjectImageViewSet)
 router.register("project-videos", ProjectVideoViewSet)
 router.register("project-files-3d", Project3DFileViewSet)

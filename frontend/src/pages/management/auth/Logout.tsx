@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../context/auth-context";
 import { LOGIN_ROUTE } from "../../../constants/constants";
 
 export default function Logout() {
@@ -14,7 +14,7 @@ export default function Logout() {
     logout().finally(() => {
       navigate(LOGIN_ROUTE, { replace: true });
     });
-  }, []);
+  }, [logout, navigate]);
 
   return (
     <div className="flex items-center justify-center w-full h-screen">

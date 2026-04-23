@@ -48,7 +48,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'user': '100/minute',
         'anon': '10/minute',
-    }
+    },
+    "EXCEPTION_HANDLER": "app.interfaces.public.api.exception_handler.custom_exception_handler",
 }
 
 SIMPLE_JWT = {

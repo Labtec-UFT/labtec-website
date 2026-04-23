@@ -1,4 +1,8 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
+
+from app.service.UploadService import UploadService
+from app.service.ValidationService import ValidationService
 
 from .models import (
     Project,
@@ -10,6 +14,13 @@ from .models import (
 )
 
 class ProjectImageSerializer(serializers.ModelSerializer):
+    def validate_image(self, value):
+        try:
+            UploadService.validate_file(value, context="projects.image")
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages)
+        return value
+
     class Meta:
         model = ProjectImage
         fields = ["id", "image", "order"]
@@ -17,6 +28,8 @@ class ProjectImageSerializer(serializers.ModelSerializer):
 
 
 class ProjectVideoSerializer(serializers.ModelSerializer):
+    url = serializers.URLField(required=True)
+
     class Meta:
         model = ProjectVideo
         fields = ["id", "url", "title"]
@@ -24,6 +37,15 @@ class ProjectVideoSerializer(serializers.ModelSerializer):
 
 
 class Project3DFileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=255, min_length=3)
+
+    def validate_file(self, value):
+        try:
+            UploadService.validate_file(value, context="projects.files_3d")
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages)
+        return value
+
     class Meta:
         model = Project3DFile
         fields = ["id", "file", "name", "description", "created_at"]
@@ -31,12 +53,21 @@ class Project3DFileSerializer(serializers.ModelSerializer):
 
 
 class Print3DDataSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        try:
+            ValidationService.validate_print_3d_data(attrs)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict if hasattr(exc, "message_dict") else exc.messages)
+        return attrs
+
     class Meta:
         model = Print3DData
         fields = ["material", "weight_grams", "print_time"]
 
 
 class PrintStepSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(min_length=5)
+
     class Meta:
         model = PrintStep
         fields = ["id", "step_number", "description"]
@@ -105,4 +136,21 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+    def validate(self, attrs):
+        payload = {
+            "title": attrs.get("title", getattr(self.instance, "title", "")),
+            "short_description": attrs.get(
+                "short_description", getattr(self.instance, "short_description", "")
+            ),
+            "description": attrs.get("description", getattr(self.instance, "description", "")),
+            "is_published": attrs.get("is_published", getattr(self.instance, "is_published", False)),
+        }
+
+        try:
+            ValidationService.validate_project_payload(payload)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict if hasattr(exc, "message_dict") else exc.messages)
+
+        return attrs
 

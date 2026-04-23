@@ -1,26 +1,32 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
+
 from app.domains.news.models import NewsModel
 from app.domains.news.serializer import NewsSerializer
 
-class ListCreateNews(generics.ListCreateAPIView):
+
+class PublicListNews(generics.ListAPIView):
+    queryset = NewsModel.objects.filter(is_published=True).order_by("-created_at")
+    serializer_class = NewsSerializer
+    permission_classes = [AllowAny]
+
+
+class PublicRetrieveNews(generics.RetrieveAPIView):
+    queryset = NewsModel.objects.filter(is_published=True)
+    serializer_class = NewsSerializer
+    permission_classes = [AllowAny]
+
+
+class ManageListCreateNews(generics.ListCreateAPIView):
     queryset = NewsModel.objects.all().order_by("-created_at")
     serializer_class = NewsSerializer
-
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-class RetrieveUpdateDeleteNews(generics.RetrieveUpdateDestroyAPIView):
+class ManageRetrieveUpdateDeleteNews(generics.RetrieveUpdateDestroyAPIView):
     queryset = NewsModel.objects.all()
     serializer_class = NewsSerializer
-
-    def get_permissions(self):
-        if self.request.method in ["PUT", "PATCH", "DELETE"]:
-            return [IsAdminUser()]
-        return [AllowAny()]
+    permission_classes = [IsAdminUser]

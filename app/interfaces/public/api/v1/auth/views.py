@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework import serializers, status
+from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from decouple import config
 
 User = get_user_model()
@@ -45,10 +46,7 @@ class CookieTokenRefreshView(TokenRefreshView):
         refresh_token = request.COOKIES.get('refresh_token')
 
         if not refresh_token:
-            return Response(
-                {"detail": "Refresh token não encontrado."},
-                status=401
-            )
+            raise AuthenticationFailed("Refresh token nao encontrado.")
 
         data = request.data.copy()
         data['refresh'] = refresh_token
@@ -72,7 +70,7 @@ class LogoutView(APIView):
     """
     Logout: invalida o refresh token no servidor e apaga o cookie.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         refresh_token = request.COOKIES.get('refresh_token')

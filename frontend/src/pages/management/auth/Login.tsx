@@ -5,7 +5,7 @@ import Input from "@components/commons/Input";
 import Button from "@components/commons/Button";
 import logo from "@assets/labtec_black.png";
 
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../context/auth-context";
 import { HOME_ROUTE } from "../../../constants/constants";
 
 export default function Login() {
@@ -29,13 +29,8 @@ export default function Login() {
       await login(email, password);
       navigate(HOME_ROUTE, { replace: true });
     } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err
-      ) {
-        const axiosErr = err as { response?: { data?: { detail?: string } } };
-        setError(axiosErr.response?.data?.detail ?? "Credenciais inválidas.");
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError("Erro ao conectar com o servidor.");
       }

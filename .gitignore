@@ -7,6 +7,8 @@
 
 # Django
 db.sqlite3
+staticfiles/
+app/static/dist/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -200,7 +202,7 @@ cython_debug/
 
 # Abstra
 #   Abstra is an AI-powered process automation framework.
-#   Ignore directories containing user credentials, local state, and settings.
+#   Ignore directories containing users credentials, local state, and settings.
 #   Learn more at https://abstra.io/docs
 .abstra/
 

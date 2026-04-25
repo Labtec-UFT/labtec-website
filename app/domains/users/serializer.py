@@ -1,6 +1,8 @@
+import re
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
@@ -42,24 +44,23 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class CustomTokenSerializer(serializers.Serializer):
-    login = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
-    access = serializers.CharField(read_only=True)
-    refresh = serializers.CharField(read_only=True)
+        pattern = r'^[A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)+$'
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(
+                "Informe nome e sobrenome válidos."
+            )
+        return value
 
     def validate(self, attrs):
         login = attrs.get("login")
         password = attrs.get("password")
 
-        user = authenticate(username=login, password=password)
+        pattern = r'^55\d{11}$'
 
-        if user is None:
-            try:
-                user_obj = User.objects.get(email=login)
-                user = authenticate(username=user_obj.username, password=password)
-            except User.DoesNotExist:
-                pass
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(
+                "Telefone deve estar no formato: 5563999999999"
+            )
 
         if user is None:
             raise serializers.ValidationError("Usuário ou senha inválidos")

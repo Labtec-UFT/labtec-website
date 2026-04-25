@@ -6,7 +6,7 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 
 ## Objetivos do Projeto
 
-* Apresentar o laboratório de forma institucional e confiável.
+* Apresentar o laboratório de forma institucional.
 * Exibir projetos ativos e concluídos com detalhes completos.
 * Disponibilizar notícias e publicações para manter visitantes atualizados.
 * Permitir solicitação de serviços e orçamentos automatizados.
@@ -17,7 +17,7 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 
 ## Stack Tecnológica
 
-- **Backend:** Django 5.2.3 + Django REST Framework
+- **Backend:** Django 6.0.2 + Django REST Framework
 - **Frontend:** React + Vite
 - **Banco de Dados:** PostgreSQL
 
@@ -48,7 +48,6 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 * Upload e organização de arquivos e mídia.
 * Configurações gerais do sistema.
 * Registro de logs básicos e estatísticas.
-
 ---
 
 ## Estrutura de Desenvolvimento
@@ -88,18 +87,18 @@ O **Labtec Website** é a plataforma oficial do Laboratório de Tecnologias Comp
 
 ## Equipe
 
-### Coordenação e Apoio Institucional
+### Orientação do Projeto
 
-**Prof. Warley Gramacho** – Coordenador Institucional
+**Prof. Warley Gramacho** – Professor Orientador
 
-* Direcionamento estratégico e alinhamento entre equipe e laboratório.
+* Orientação do projeto e acompanhamento do progresso geral.
 
 ### Gestão e Arquitetura
 
-**[Luís Gustavo Alves Bezerra](https://github.com/lu1zss)** – Gerente de Projeto & Desenvolvedor
+**[Luís Gustavo Alves Bezerra](https://github.com/lu1zss)** – Gerente de Projeto e Desenvolvedor
 * Planejamento e organização de sprints, arquitetura e desenvolvimento de funcionalidades.
 
-### Desenvolvimento
+### Equipe de Desenvolvimento
 
 **[Tarciso Filho](https://github.com/)** – Desenvolvedor
 * Responsável pela implementação de funcionalidades, integração backend/frontend e manutenção do sistema.
@@ -147,11 +146,11 @@ git clone https://github.com/Labtec-UFT/labtec-website.git
     (venv) C:\labtec-website> pip install -m requirements.txt
 ```
 
-3. Configure o ambiente frontend (React + Vite).
+4. Configure variáveis de ambiente (.env)
 
 4. Configure variáveis de ambiente (DB, JWT, SMTP, etc.) - Disponível no grupo de comunicações, modelo base na .env-example
 
-5. Execute os servidores:
+6. Execute os servidores:
 
 ```bash
 # Backend

@@ -1,0 +1,184 @@
+from django.db import models
+from django.conf import settings
+
+from app.service.UploadService import project_3d_file_upload_to, project_image_upload_to
+from app.service.ValidationService import ValidationService
+
+
+class Project(models.Model):
+    class ProjectType(models.TextChoices):
+        PRINT_3D = "print_3d", "Impressão 3D"
+        MODELING = "modeling", "Modelagem"
+        HARDWARE = "hardware", "Hardware"
+        SOFTWARE = "software", "Software"
+
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255)
+    short_description = models.CharField(max_length=500)
+    description = models.TextField()
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="created_projects",
+    )
+    co_creators = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="co_created_projects",
+        blank=True,
+    )
+    project_type = models.CharField(
+        max_length=20,
+        choices=ProjectType,
+        default=ProjectType.PRINT_3D,
+    )
+    published_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="published_projects",
+    )
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "projects"
+        ordering = ["-created_at"]
+        verbose_name = "Projeto"
+        verbose_name_plural = "Projetos"
+
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        ValidationService.validate_project_payload(
+            {
+                "title": self.title,
+                "short_description": self.short_description,
+                "description": self.description,
+                "is_published": self.is_published,
+            }
+        )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class ProjectImage(models.Model):
+    id = models.AutoField(primary_key=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to=project_image_upload_to)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        db_table = "project_images"
+        ordering = ["order"]
+        verbose_name = "Imagem do Projeto"
+        verbose_name_plural = "Imagens do Projeto"
+
+    def __str__(self):
+        return f"Imagem {self.order} — {self.project.title}"
+
+
+class ProjectVideo(models.Model):
+    id = models.AutoField(primary_key=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="videos",
+    )
+    url = models.URLField()
+    title = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        db_table = "project_videos"
+        verbose_name = "Vídeo do Projeto"
+        verbose_name_plural = "Vídeos do Projeto"
+
+    def __str__(self):
+        return self.title or f"Vídeo de {self.project.title}"
+
+
+class Project3DFile(models.Model):
+    id = models.AutoField(primary_key=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="files_3d",
+    )
+    file = models.FileField(upload_to=project_3d_file_upload_to)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "project_3d_files"
+        verbose_name = "Arquivo 3D do Projeto"
+        verbose_name_plural = "Arquivos 3D do Projeto"
+
+    def __str__(self):
+        return f"{self.name} — {self.project.title}"
+
+
+class Print3DData(models.Model):
+    project = models.OneToOneField(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="print_3d_data",
+        limit_choices_to={"project_type": Project.ProjectType.PRINT_3D},
+    )
+    material = models.CharField(max_length=100)
+    weight_grams = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+    print_time = models.DurationField(
+        null=True,
+        blank=True,
+        help_text="Formato: HH:MM:SS",
+    )
+
+    class Meta:
+        db_table = "print_3d_data"
+        verbose_name = "Dados de Impressão 3D"
+        verbose_name_plural = "Dados de Impressão 3D"
+
+    def __str__(self):
+        return f"Dados 3D — {self.project.title}"
+
+    def clean(self):
+        ValidationService.validate_print_3d_data(
+            {
+                "material": self.material,
+                "weight_grams": self.weight_grams,
+            }
+        )
+
+
+class PrintStep(models.Model):
+    id = models.AutoField(primary_key=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="print_steps",
+    )
+    step_number = models.PositiveIntegerField()
+    description = models.TextField()
+
+    class Meta:
+        db_table = "print_step"
+        ordering = ["step_number"]
+        unique_together = ("project", "step_number")
+        verbose_name = "Etapa de Impressão"
+        verbose_name_plural = "Etapas de Impressão"
+
+    def __str__(self):
+        return f"Etapa {self.step_number} — {self.project.title}"

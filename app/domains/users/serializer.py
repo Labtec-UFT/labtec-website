@@ -8,49 +8,41 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(write_only=True, min_length=8)
-    profile_picture = serializers.ImageField(read_only=True)
+    profile_picture = serializers.SerializerMethodField()
+    get_full_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
         fields = [
-            'id',
-            'email',
-            'password',
-            'full_name',
-            'phone_number',
-            'is_staff',
-            'is_superuser',
-            'is_active',
-            'profile_picture',
+            "id",
+            "username",
+            "email",
+            "password",
+            "phone_number",
+            "is_staff",
+            "is_superuser",
+            "is_active",
+            "profile_picture",
+            "get_full_name",
         ]
 
         extra_kwargs = {
-            'is_staff': {'read_only': True},
-            'is_superuser': {'read_only': True},
-            'is_active': {'read_only': True},
+            "password": {"write_only": True},
+            "is_staff": {"read_only": True},
+            "is_superuser": {"read_only": True},
+            "is_active": {"read_only": True},
         }
 
-    def validate_email(self, value):
-        queryset = User.objects.filter(email=value)
-        if self.instance:
-            queryset = queryset.exclude(pk=self.instance.pk)
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            return obj.profile_picture.url
+        return None
 
-        if queryset.exists():
-            raise serializers.ValidationError("Este email já está cadastrado.")
-        return value
+    def create(self, validated_data):
+        password = validated_data.pop("password", None)
+        user = User.objects.create_user(password=password, **validated_data)
+        return user
 
-    def validate_password(self, value):
-        try:
-            validate_password(value, self.instance)
-        except DjangoValidationError as exc:
-            raise serializers.ValidationError(exc.messages)
-        return value
-
-    def validate_full_name(self, value):
-        if not value:
-            raise serializers.ValidationError("Nome completo é obrigatório.")
 
         pattern = r'^[A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)+$'
         if not re.match(pattern, value):
@@ -59,9 +51,9 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def validate_phone_number(self, value):
-        if value in (None, ""):
-            return value
+    def validate(self, attrs):
+        login = attrs.get("login")
+        password = attrs.get("password")
 
         pattern = r'^55\d{11}$'
 
@@ -70,9 +62,11 @@ class UserSerializer(serializers.ModelSerializer):
                 "Telefone deve estar no formato: 5563999999999"
             )
 
-        return value
+        if user is None:
+            raise serializers.ValidationError("Usuário ou senha inválidos")
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create_user(password=password, **validated_data)
-        return user
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            "access": str(refresh.access_token)
+        }

@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
 
+from app.service.UploadService import project_3d_file_upload_to, project_image_upload_to
+from app.service.ValidationService import ValidationService
+
 
 class Project(models.Model):
     class ProjectType(models.TextChoices):
@@ -25,7 +28,8 @@ class Project(models.Model):
     )
     project_type = models.CharField(
         max_length=20,
-        choices=ProjectType.choices,
+        choices=ProjectType,
+        default=ProjectType.PRINT_3D,
     )
     published_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -47,6 +51,20 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        ValidationService.validate_project_payload(
+            {
+                "title": self.title,
+                "short_description": self.short_description,
+                "description": self.description,
+                "is_published": self.is_published,
+            }
+        )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class ProjectImage(models.Model):
     id = models.AutoField(primary_key=True)
@@ -55,7 +73,7 @@ class ProjectImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images",
     )
-    image = models.ImageField(upload_to="projects/images/")
+    image = models.ImageField(upload_to=project_image_upload_to)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -94,7 +112,7 @@ class Project3DFile(models.Model):
         on_delete=models.CASCADE,
         related_name="files_3d",
     )
-    file = models.FileField(upload_to="projects/3d_files/")
+    file = models.FileField(upload_to=project_3d_file_upload_to)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -135,6 +153,14 @@ class Print3DData(models.Model):
 
     def __str__(self):
         return f"Dados 3D — {self.project.title}"
+
+    def clean(self):
+        ValidationService.validate_print_3d_data(
+            {
+                "material": self.material,
+                "weight_grams": self.weight_grams,
+            }
+        )
 
 
 class PrintStep(models.Model):

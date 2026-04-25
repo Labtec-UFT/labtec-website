@@ -1,6 +1,28 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+article img,
+article picture,
+article svg {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: cover;
 }
+
+article p,
+article li,
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+  line-height: 1.6;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+article .bg-gray-100 {
+  min-height: 6rem;
+}
+
+

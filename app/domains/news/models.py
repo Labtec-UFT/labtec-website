@@ -1,6 +1,8 @@
 from django.utils import timezone
 from django.db import models
 from app.domains.users.models import CustomUser
+from app.service.UploadService import news_image_upload_to
+from app.service.ValidationService import ValidationService
 from app.utils.bleach_utils import clean_html
 
 
@@ -29,10 +31,21 @@ class NewsModel(models.Model):
     def save(self, *args, **kwargs):
         self.content = clean_html(self.content, strip_opt=True)
 
+        self.full_clean()
+
         if self.is_published and not self.published_at:
             self.published_at = timezone.now()
 
         super().save(*args, **kwargs)
+
+    def clean(self):
+        ValidationService.validate_news_payload(
+            {
+                "title": self.title,
+                "content": self.content,
+                "is_published": self.is_published,
+            }
+        )
 
     def __str__(self):
         return f"{self.id} - {self.title}"
@@ -43,7 +56,7 @@ class NewsImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images"
     )
-    image = models.ImageField(upload_to="news/images/")
+    image = models.ImageField(upload_to=news_image_upload_to)
     description = models.CharField(max_length=255, blank=True, null=True)
     is_cover = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
